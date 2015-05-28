@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Fraction : MonoBehaviour {
+public class Replace : MonoBehaviour {
 
 	public GameObject fracturedObject;
 	
@@ -9,7 +9,7 @@ public class Fraction : MonoBehaviour {
 
 		//print(collision.contacts[0]);
 
-		if (collision.gameObject.tag == "sphere") {
+		if (collision.gameObject.tag == "Godzilla") {
 			Destroy(gameObject);
 			Instantiate (fracturedObject, this.transform.position, this.transform.rotation);
 

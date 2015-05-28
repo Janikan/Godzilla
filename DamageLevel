@@ -35,8 +35,7 @@ public class FractureWithDamageLevel2 : MonoBehaviour {
 				}
 				Destroy(this.collider, 0.5f);
 			}
-			/*Instantiate (fracturedObj, transform.position, transform.rotation);
-			Destroy (this.gameObject);*/
+
 		}
 	}
 	void Start() {

@@ -1,0 +1,24 @@
+using UnityEngine;
+using System.Collections;
+
+public class ParticleCol : MonoBehaviour {
+
+	// Use this for initialization
+	private GameObject capsule;
+
+	void Start () {
+		capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+		capsule.transform.position = GameObject.Find("Fireball").transform.position;
+		capsule.gameObject.tag = "Player";
+		capsule.AddComponent<Rigidbody> ().useGravity = false;
+		capsule.transform.localScale = new Vector3 (0.1F, 0.1F, 0.1F);
+		capsule.GetComponent<MeshRenderer> ().enabled = false;
+	}
+
+	void Update() {
+		if (capsule != null) {
+			capsule.transform.Translate (Vector3.forward * Time.deltaTime * 9);
+		}
+	}
+
+}

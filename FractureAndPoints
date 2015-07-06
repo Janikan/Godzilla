@@ -1,0 +1,96 @@
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+
+[System.Serializable]
+public class Particle{
+	public float deathTime = 1f;
+	public GameObject particleObject;
+}
+
+[System.Serializable]
+public class ObjectStats{
+	public int maxhealth = 100;
+	public int onHit = 25;
+	public int onProjectile = 50;	
+	public int pointsOnHit = 5;
+	public int pointsOnDestroy = 50;
+}
+
+public class FractureWithDamageLevel3 : MonoBehaviour
+{
+	public ObjectStats stats;
+	public PointSystemManager psm;
+
+	//public GameObject fracturedObj;
+	public bool damageLevel;
+	public int Durability;
+	private ArrayList childs = new ArrayList ();
+	private int listSize;
+	public int ShardsPerHit;
+	public Particle particle;
+
+	private int currentHealth;
+	
+	void OnTriggerEnter (Collider other)
+	{
+		psm.setUpObject(other.transform.position);
+
+		Debug.LogError (other.gameObject.tag);
+		if (other.gameObject.tag == "sphere") {
+			applyDamage(stats.onProjectile);
+
+			Destroy(other.gameObject);
+		}
+
+		if (other.gameObject.tag == "Hit") {
+			applyDamage(stats.onHit);
+		}
+
+
+	}
+
+	void applyDamage(int dmg){
+		currentHealth -= dmg;
+
+		for (int i=0; i<ShardsPerHit; i++) {
+			GameObject randomObject = (GameObject)childs [Random.Range (0, listSize)];
+			if (randomObject.GetComponent<Rigidbody> () == null) {
+				randomObject.AddComponent<Rigidbody> ();
+			}
+		}
+
+		
+		if (currentHealth <= 0) {
+			foreach (GameObject temp in childs) {
+				if (temp.GetComponent<Rigidbody> () == null) {
+					temp.AddComponent<Rigidbody> ();
+				}
+			}
+			Destroy (this.collider, 0.5f);
+			psm.addPoints(stats.pointsOnDestroy);
+			return;
+		}
+		psm.addPoints(stats.pointsOnHit);
+	}
+
+	void spawnOnHitParticle(Collision collision) {
+		ContactPoint point = collision.contacts [0];
+
+		if (collision.gameObject.tag.Equals ("Hit") || collision.gameObject.tag.Equals ("sphere")) {
+			GameObject p = Instantiate (particle.particleObject, point.point, Quaternion.identity) as GameObject;
+			Destroy (p, particle.deathTime);
+		}
+	}
+	
+	void Start ()
+	{
+		foreach (GameObject temp in GameObject.FindGameObjectsWithTag(this.gameObject.name+"_shard")) {
+			childs.Add (temp);
+		}
+		listSize = childs.Count;
+		Debug.Log (listSize);
+		currentHealth = stats.maxhealth;
+	}
+}

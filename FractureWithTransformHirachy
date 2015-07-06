@@ -1,0 +1,77 @@
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+
+public class FractureWithDamageLevel2 : MonoBehaviour {
+
+	//public GameObject fracturedObj;
+	public int Durability;
+	private int clicks=0;
+	private Transform[] hirachy;
+	private List<GameObject> allChilds=new List<GameObject>();
+	private List<GameObject> childsOfFirstDepth=new List<GameObject>();
+	private int ShardsPerHit;
+
+	Dictionary<string,Transform[]> childArrays;
+
+	void OnMouseDown() {
+		clicks++;
+		//Debug.Log (clicks);
+		//Debug.Log(this.gameObject.name);
+		//Debug.Log(childArrays["Lower"].Length);
+
+	
+			if(clicks<=Durability) {
+				for(int i=0; i<ShardsPerHit; i++) {
+
+				//Transform[] randomObject2 = childArrays["Lower"];
+			
+					GameObject randomObject = (GameObject)childsOfFirstDepth[Random.Range (0, childsOfFirstDepth.Count)];
+
+					if(randomObject.GetComponent<Rigidbody>() == null ) {
+						randomObject.AddComponent<Rigidbody>();
+						//randomObject.GetComponent<Rigidbody>().isKinematic=false;
+					}
+				}
+			}
+		
+			if(clicks==Durability) {
+				foreach(GameObject temp in allChilds) {
+					if(temp.GetComponent<Rigidbody>() == null) {
+					temp.AddComponent<Rigidbody>();
+					}
+				}
+				Destroy(this.collider, 0.5f);
+			}
+
+	}
+
+
+	void Start() {
+		//for(int i=0; i<
+		//childs.Add(GameObject.FindGameObjectWithTag ("Lower").transform.GetChild(i))
+		//foreach (GameObject temp in GameObject.FindGameObjectsWithTag(this.gameObject.name+"_shard")) {
+		//foreach (GameObject temp in GameObject.FindGameObjectsWithTag(this.gameObject.name+"_shard")) {
+		//	childs.Add(temp);
+		//}
+		//childArrays = new Dictionary<string, Transform[]>();
+
+		hirachy = this.gameObject.GetComponentsInChildren<Transform> ();
+		for(int i=0; i<hirachy.Length; i++) {
+			allChilds.Add(hirachy[i].gameObject);
+
+			if(hirachy[i].parent.name == this.gameObject.name && hirachy[i].gameObject.GetComponentsInChildren<Transform>().Length==1) {
+				childsOfFirstDepth.Add(hirachy[i].gameObject);
+			}
+
+
+			//temp=hirachy[i].gameObject.GetComponentsInChildren<Transform>();
+		}
+		ShardsPerHit = childsOfFirstDepth.Count / Durability;
+		//Debug.Log ("shards" + ShardsPerHit);
+		//Debug.Log ("alle"+allChilds.Count);
+		//Debug.Log ("kinder"+childsOfFirstDepth.Count);
+
+	}
+}

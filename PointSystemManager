@@ -1,0 +1,88 @@
+using UnityEngine;
+using System.Collections;
+
+public class PointSystemManager : MonoBehaviour {
+	public float timeToMultply = 2f;
+	private int points = 0;
+	
+	private bool startTime = false;
+	private float currentTimeTillStart = 0f;
+
+	private GameObject x2;
+	private int mulitplicatorCount = 1;
+	public Transform score_text;
+	public Transform overallPoints;
+
+
+
+
+	public int getPoints(){
+		return points;
+	}
+
+
+	public void addPoints(int point){
+
+		this.points += modifyPoints(point);
+		Debug.LogWarning("CurrentPoints: " + points);
+	}
+	
+
+	private int modifyPoints(int point){
+
+		int modifiedPoint = point;
+
+
+		if( currentTimeTillStart == 0f){ // wenn erster Schlag
+			startTime = true;
+		}
+
+		if(currentTimeTillStart <= timeToMultply){
+
+			modifiedPoint *= mulitplicatorCount;
+			Debug.LogWarning(
+			                 "Mulitplikator: " + mulitplicatorCount +"\n" + 
+							"Points-Multiplied: " + modifiedPoint 
+			                 );
+
+			currentTimeTillStart = 0f;
+			spawnSign(mulitplicatorCount);
+			mulitplicatorCount++;
+
+		}else{
+			currentTimeTillStart = 0f;
+			mulitplicatorCount = 0;
+			startTime = false;
+		}
+		Debug.LogWarning("modPoints: " + modifiedPoint);
+		score_text.GetComponent<TextMesh>().text=""+modifiedPoint;
+		GameObject o = Instantiate(score_text, objectPosition,new Quaternion(0f,0f, 0f,1f)) as GameObject;
+		Debug.LogWarning("score: " + score_text.GetComponent<TextMesh>().text);
+		return modifiedPoint;
+	}
+
+	private Vector3 objectPosition;
+	public void setUpObject(Vector3 position){
+		objectPosition = position;
+	}
+
+	void spawnSign(int sign){
+		if(sign == 1)
+			return;
+		Quaternion q = new Quaternion(1f,0f, 0f,1f);
+		GameObject o = Instantiate(x2, objectPosition,q) as GameObject;
+		Destroy(o, 2f);
+	}
+
+
+	void Start(){
+		x2 = GameObject.Find("x2");
+	}
+	
+	void Update () {
+		if(startTime)
+			currentTimeTillStart += Time.deltaTime;
+		overallPoints.GetComponent<TextMesh>().text=""+getPoints();
+
+	}
+}
